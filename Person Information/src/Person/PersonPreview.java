@@ -88,6 +88,8 @@ public class PersonPreview {
 	public PersonPreview() {
 		initialize();
 	}
+	//This function is to add a new element in the JSON file,
+	//By creating a new line in it containing the new values.
 	@SuppressWarnings("unchecked")
 	private void WriteToFile(String Path)
 	{
@@ -137,6 +139,8 @@ public class PersonPreview {
 			}
 		}
 	}
+	//After deleting an element from the table changes need to be made in the JSON file.
+	//The list contain all elements except the delete record is written in a new version of the file with the same name.
 	private void WriteToNewFile(JSONObject obj,String PathToJSONFile,int i)
 	{
 		BufferedReader br = null;
@@ -208,6 +212,8 @@ public class PersonPreview {
 		}
 
 	}
+	//Delete method is used to check if the element exists then deletes it from the file.
+	//by reading the file content then removing the object then writing the new version of file with same elements.
 	private void Delete(String FName,String LName,String TitleArg,String AgeArg,String PhoneArg,String EmailArg,String PathToFile)
 	{
 		JSONParser parser = new JSONParser();
@@ -267,10 +273,7 @@ public class PersonPreview {
 			}
 		}
 	}
-	private void PopulateTable()
-	{
 
-	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -292,6 +295,8 @@ public class PersonPreview {
 		panel.add(lblNewLabel);
 
 		FirstNameTxt = new JTextField();
+		FirstNameTxt.setToolTipText("Enter first name (Alphebts only allowed)");
+		//Handle the irrelevant data entered in text field
 		FirstNameTxt.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -308,6 +313,8 @@ public class PersonPreview {
 		FirstNameTxt.setColumns(10);
 
 		LastNameTxt = new JTextField();
+		LastNameTxt.setToolTipText("Enter last name (Alphebts only allowed)");
+		//Handle the irrelevant data entered in text field
 		LastNameTxt.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -334,6 +341,8 @@ public class PersonPreview {
 		panel.add(lblTitle);
 
 		PhoneTxt = new JTextField();
+		//Handle the irrelevant data entered in text field
+		PhoneTxt.setToolTipText("Enter Phone(Digits only allowed)");
 		PhoneTxt.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -360,6 +369,8 @@ public class PersonPreview {
 		panel.add(lblAge);
 
 		AgeTxt = new JTextField();
+		AgeTxt.setToolTipText("Enter age (Digits only allowed)");
+		//Handle the irrelevant data entered in text field
 		AgeTxt.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(java.awt.event.FocusEvent e) {
@@ -391,6 +402,7 @@ public class PersonPreview {
 		panel.add(lblEmail);
 
 		EmailTxt = new JTextField();
+		EmailTxt.setToolTipText("Enter email");
 		EmailTxt.setFont(new Font("Arial", Font.BOLD, 24));
 		EmailTxt.setColumns(10);
 		EmailTxt.setBounds(146, 198, 200, 30);
@@ -402,6 +414,9 @@ public class PersonPreview {
 		panel.add(TitleCombobox);
 		JButton button = new JButton("Add");
 		//Add Button -----------------------------------------------------------------------------------------------
+		//this method is used in 2 cases first: to add a new element to the file.
+		//second to update any record in the file.
+		//Read entered data -> check if it exists -> add data to jtable -> add data to file.
 		button.addActionListener(new ActionListener() {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
@@ -449,6 +464,8 @@ public class PersonPreview {
 		frmPersonInformationSystem.getContentPane().add(button);
 		JButton btnUpdate = new JButton("Update");
 		//Update button code-------------------------------------------------------------------------------------------
+		//this method is used to updata any record in the file
+		//Read entered data -> check if it exists -> delete old record -> add new record.
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
@@ -498,6 +515,8 @@ public class PersonPreview {
 
 		JButton btnDelete = new JButton("Delete");
 		//Delete Button -----------------------------------------------------------------------------------------------
+		//This method is used to delete any record from the file
+		//Check if there is any data first-> remove from jtable -> call Delete method to delete record from the file.
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
@@ -532,6 +551,9 @@ public class PersonPreview {
 		frmPersonInformationSystem.getContentPane().add(btnDelete);
 
 		//Import JSON File Button -----------------------------------------------------------------------------------------------
+		//This method is to read the JSON file and show it in the jtable.
+		//Get the JSON file path-> check if its correct -> read line by line -> one JSON object at a time ->
+		//add to list to check for repeated records -> show data in Jtable
 		JButton btnView = new JButton("Import JSON");
 		btnView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -611,6 +633,7 @@ public class PersonPreview {
 		btnView.setBounds(84, 525, 200, 50);
 		frmPersonInformationSystem.getContentPane().add(btnView);
 		//column sort code-----------------------------------------------------------------------------------------------
+		//Sorting in two ways by column headers or by this code by getting the index of desired column to be sorted.
 		JButton btnSort = new JButton("Sort");
 		btnSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -627,6 +650,9 @@ public class PersonPreview {
 		btnSort.setBounds(84, 408, 200, 50);
 		frmPersonInformationSystem.getContentPane().add(btnSort);
 		//FilterBUTTON code ----------------------------------------------------------------
+		//This method is to filter based on an entered value.
+		//lets say user entered a value that he can't remember beginning or the end this code handles this case.
+		
 		JButton btnFilter = new JButton("Filter");
 		btnFilter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -683,6 +709,7 @@ public class PersonPreview {
 
 		table = new JTable();
 		table.setDefaultEditor(Object.class, null);
+		//enable the column's header sorting.
 		table.setAutoCreateRowSorter(true);
 		table.setModel(new DefaultTableModel(
 				new Object[][] {
@@ -695,6 +722,7 @@ public class PersonPreview {
 		scrollPane.setViewportView(table);
 
 		textField = new JTextField();
+		textField.setToolTipText("Enter value to filter for it");
 		textField.setFont(new Font("Arial", Font.BOLD, 24));
 		textField.setBounds(290, 465, 200, 50);
 		frmPersonInformationSystem.getContentPane().add(textField);
@@ -707,6 +735,7 @@ public class PersonPreview {
 		JSONPath.setBounds(290, 525, 818, 50);
 		frmPersonInformationSystem.getContentPane().add(JSONPath);
 		//Browse Button code---------------------------------------------------------------------------
+		//grabbing the file and writing down it's path to the text field.
 		JButton btnNewButton = new JButton("Browse");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
