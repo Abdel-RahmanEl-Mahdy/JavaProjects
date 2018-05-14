@@ -56,13 +56,14 @@ public class PersonPreview {
 	private JTextField EmailTxt;
 	private JFrame frame;
 	private JTable table;
-	private JTextField textField;
-	private JTextField JSONPath;
+	private JTextField FilterTxt;
+	private JTextField JSONPathTxt;
 	private String FirstName,LastName,Title,Age,Phone,Email;
 	private JComboBox SortColumnComboBox;
 	private ImageIcon OrangeLogo;
 	private JLabel OrangeLabel;
 	private boolean AddDone=false,Update=false;
+	String JSONPathfile;
 	List<String> PersonList = new ArrayList<String>();
 
 	/**
@@ -87,6 +88,18 @@ public class PersonPreview {
 
 	public PersonPreview() {
 		initialize();
+	}
+	private void clear(JPanel panel)
+	{
+		JTextField temp=null;
+		for(java.awt.Component c:panel.getComponents())
+		{
+			if(c.getClass().toString().contains("javax.swing.JTextField"))
+			{
+				temp=(JTextField)c;
+				temp.setText(null);
+			}
+		}
 	}
 	//This function is to add a new element in the JSON file,
 	//By creating a new line in it containing the new values.
@@ -277,7 +290,7 @@ public class PersonPreview {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	protected void initialize() {
 		frmPersonInformationSystem = new JFrame();
 		frmPersonInformationSystem.setResizable(false);
 		frmPersonInformationSystem.setTitle("Person Information System");
@@ -286,7 +299,7 @@ public class PersonPreview {
 		frmPersonInformationSystem.getContentPane().setLayout(null);
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Person Information", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel.setBounds(84, 29, 516, 317);
+		panel.setBounds(0, 0, 1377, 726);
 		frmPersonInformationSystem.getContentPane().add(panel);
 		panel.setLayout(null);
 		JLabel lblNewLabel = new JLabel("First Name");
@@ -311,7 +324,6 @@ public class PersonPreview {
 		FirstNameTxt.setBounds(146, 34, 200, 30);
 		panel.add(FirstNameTxt);
 		FirstNameTxt.setColumns(10);
-
 		LastNameTxt = new JTextField();
 		LastNameTxt.setToolTipText("Enter last name (Alphebts only allowed)");
 		//Handle the irrelevant data entered in text field
@@ -376,7 +388,7 @@ public class PersonPreview {
 			public void focusLost(java.awt.event.FocusEvent e) {
 				if(Integer.parseInt(AgeTxt.getText().toString())<10)
 				{
-					JOptionPane.showMessageDialog(null,"Please enter valid age!","Person Information System",JOptionPane.OK_OPTION);
+					JOptionPane.showMessageDialog(null,"Please enter valid age!","Person Information System !",JOptionPane.OK_OPTION);
 					AgeTxt.grabFocus();
 				}
 			}
@@ -412,16 +424,14 @@ public class PersonPreview {
 		TitleCombobox.setModel(new DefaultComboBoxModel(new String[] {"Mr", "Miss", "Mrs", "Ms"}));
 		TitleCombobox.setBounds(146, 101, 69, 30);
 		panel.add(TitleCombobox);
-		JButton button = new JButton("Add");
+		JButton btnAdd = new JButton("Add");
 		//Add Button -----------------------------------------------------------------------------------------------
 		//this method is used in 2 cases first: to add a new element to the file.
 		//second to update any record in the file.
 		//Read entered data -> check if it exists -> add data to jtable -> add data to file.
-		button.addActionListener(new ActionListener() {
+		btnAdd.addActionListener(new ActionListener() {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
-				String JSONPathfile;
-				JSONPathfile= JSONPath.getText();
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
 				FirstName=FirstNameTxt.getText().toString();
 				LastName=LastNameTxt.getText().toString();
@@ -440,28 +450,21 @@ public class PersonPreview {
 					WriteToFile(JSONPathfile);
 					if(Update==false)
 					{
-						JOptionPane.showMessageDialog(null,"Successfully added a new row!","Person Information System",JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(null,"Successfully added a new row!","Person Information System !",JOptionPane.OK_OPTION);
 					}
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(null,"This row already exists!","Person Information System",JOptionPane.OK_OPTION);
+					JOptionPane.showMessageDialog(null,"This row already exists!","Person Information System !",JOptionPane.OK_OPTION);
 				}
-				JTextField temp=null;
-				for(java.awt.Component c:panel.getComponents())
-				{
-					if(c.getClass().toString().contains("javax.swing.JTextField"))
-					{
-						temp=(JTextField)c;
-						temp.setText(null);
-					}
-				}
+				clear(panel);
+				JSONPathTxt.setText(JSONPathfile);
 			}
 
 		});
-		button.setFont(new Font("Arial", Font.BOLD, 24));
-		button.setBounds(84, 352, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(button);
+		btnAdd.setFont(new Font("Arial", Font.BOLD, 24));
+		btnAdd.setBounds(84, 352, 200, 50);
+		panel.add(btnAdd);
 		JButton btnUpdate = new JButton("Update");
 		//Update button code-------------------------------------------------------------------------------------------
 		//this method is used to updata any record in the file
@@ -470,48 +473,43 @@ public class PersonPreview {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
 				int SelectedRow=table.getSelectedRow();
-				String FName=model.getValueAt(SelectedRow, 0).toString();
-				String LName=model.getValueAt(SelectedRow, 1).toString();
-				String TitleArg=model.getValueAt(SelectedRow, 2).toString();
-				String AgeArg=model.getValueAt(SelectedRow, 3).toString();
-				String PhoneArg=model.getValueAt(SelectedRow, 4).toString();
-				String EmailArg=model.getValueAt(SelectedRow, 5).toString();
+			
 				if(table.getSelectedRow()==-1)
 				{
 					if(table.getRowCount()==0)
 					{
-						JOptionPane.showMessageDialog(null,"No data to Update","Person Information System",JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(null,"No data to Update","Person Information System !",JOptionPane.OK_OPTION);
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(null,"Select a row to Update","Person Information System",JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(null,"Select a row to Update","Person Information System !",JOptionPane.OK_OPTION);
 					}
 				}
 				else
 				{
+					 FirstName=model.getValueAt(SelectedRow, 0).toString();
+					 LastName=model.getValueAt(SelectedRow, 1).toString();
+					 Title=model.getValueAt(SelectedRow, 2).toString();
+					 Age=model.getValueAt(SelectedRow, 3).toString();
+					 Phone=model.getValueAt(SelectedRow, 4).toString();
+					 Email=model.getValueAt(SelectedRow, 5).toString();
 					Update=true;
-					button.doClick();
+					btnAdd.doClick();
 					if(AddDone==true)
 					{
 						model.removeRow(table.getSelectedRow());
-						Delete(FName, LName, TitleArg, AgeArg, PhoneArg, EmailArg,JSONPath.getText());
-						JOptionPane.showMessageDialog(null,"Successfully Updated the row!","Person Information System",JOptionPane.OK_OPTION);
+						Delete(FirstName, LastName, Title, Age, Phone, Email,JSONPathfile);
+						JOptionPane.showMessageDialog(null,"Successfully Updated the row!","Person Information System !",JOptionPane.OK_OPTION);
 					}
+					clear(panel);
+					JSONPathTxt.setText(JSONPathfile);
 				}
-				JTextField temp=null;
-				for(java.awt.Component c:panel.getComponents())
-				{
-					if(c.getClass().toString().contains("javax.swing.JTextField"))
-					{
-						temp=(JTextField)c;
-						temp.setText(null);
-					}
-				}
+				
 			}
 		});
 		btnUpdate.setFont(new Font("Arial", Font.BOLD, 24));
 		btnUpdate.setBounds(290, 352, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnUpdate);
+		panel.add(btnUpdate);
 
 		JButton btnDelete = new JButton("Delete");
 		//Delete Button -----------------------------------------------------------------------------------------------
@@ -531,24 +529,24 @@ public class PersonPreview {
 				{
 					if(table.getRowCount()==0)
 					{
-						JOptionPane.showMessageDialog(null,"No data to delete","Person Information System",JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(null,"No data to delete","Person Information System !",JOptionPane.OK_OPTION);
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(null,"Select a row to delete","Person Information System",JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(null,"Select a row to delete","Person Information System !",JOptionPane.OK_OPTION);
 					}
 				}
 				else
 				{
 					model.removeRow(table.getSelectedRow());
-					Delete(FName, LName, TitleArg, AgeArg, PhoneArg, EmailArg,JSONPath.getText());
-					JOptionPane.showMessageDialog(null,"Successfully deleted the row!","Person Information System",JOptionPane.OK_OPTION);
+					Delete(FName, LName, TitleArg, AgeArg, PhoneArg, EmailArg,JSONPathfile);
+					JOptionPane.showMessageDialog(null,"Successfully deleted the row!","Person Information System !",JOptionPane.OK_OPTION);
 				}
 			}
 		});
 		btnDelete.setFont(new Font("Arial", Font.BOLD, 24));
 		btnDelete.setBounds(496, 352, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnDelete);
+		panel.add(btnDelete);
 
 		//Import JSON File Button -----------------------------------------------------------------------------------------------
 		//This method is to read the JSON file and show it in the jtable.
@@ -560,9 +558,8 @@ public class PersonPreview {
 				//C:/Users/badom/workspace/Person Information/myJSON.json
 				PersonList.clear();
 				List<String> RepeatedPersonList = new ArrayList<String>();
-				String JSONPathfile;
 				int RepeatedRows=0;
-				JSONPathfile= JSONPath.getText();
+				JSONPathfile= JSONPathTxt.getText();
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
 				model.setRowCount(0);
 				String sCurrentLine;
@@ -596,7 +593,7 @@ public class PersonPreview {
 					}
 					if(RepeatedRows>0)
 					{
-						JOptionPane.showMessageDialog(null,"Repeated Rows in JSON file: "+RepeatedRows+"\n"+RepeatedPersonList,"Person Information System",JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(null,"Repeated Rows in JSON file: "+RepeatedRows+"\n"+RepeatedPersonList,"Person Information System !",JOptionPane.OK_OPTION);
 					}
 				}
 				catch (FileNotFoundException e1)
@@ -631,7 +628,7 @@ public class PersonPreview {
 		});
 		btnView.setFont(new Font("Arial", Font.BOLD, 24));
 		btnView.setBounds(84, 525, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnView);
+		panel.add(btnView);
 		//column sort code-----------------------------------------------------------------------------------------------
 		//Sorting in two ways by column headers or by this code by getting the index of desired column to be sorted.
 		JButton btnSort = new JButton("Sort");
@@ -648,7 +645,7 @@ public class PersonPreview {
 		});
 		btnSort.setFont(new Font("Arial", Font.BOLD, 24));
 		btnSort.setBounds(84, 408, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnSort);
+		panel.add(btnSort);
 		//FilterBUTTON code ----------------------------------------------------------------
 		//This method is to filter based on an entered value.
 		//lets say user entered a value that he can't remember beginning or the end this code handles this case.
@@ -657,55 +654,41 @@ public class PersonPreview {
 		btnFilter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				TableRowSorter sorter = new TableRowSorter(table.getModel());
-				sorter.setRowFilter(RowFilter.regexFilter(".*"+textField.getText()+".*"));
+				sorter.setRowFilter(RowFilter.regexFilter(".*"+FilterTxt.getText()+".*"));
 				table.setRowSorter(sorter);
 			}
 		});
 		btnFilter.setFont(new Font("Arial", Font.BOLD, 24));
 		btnFilter.setBounds(84, 464, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnFilter);
+		panel.add(btnFilter);
 
 		JButton btnExit = new JButton("Exit");
 		btnExit.setForeground(Color.RED);
 		//Exit Button -----------------------------------------------------------------------------------------------
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame= new JFrame("Exit");
-				if(JOptionPane.showConfirmDialog(frmPersonInformationSystem, "Confirm if you want to exit","Person Information System",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_NO_OPTION)
-				{
 					System.exit(0);
-				}
 			}
 		});
 		btnExit.setFont(new Font("Arial", Font.BOLD, 24));
 		btnExit.setBounds(1161, 636, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnExit);
+		panel.add(btnExit);
 		JButton btnReset = new JButton("Reset");
 		//Reset Button -----------------------------------------------------------------------------------------------
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JTextField temp=null;
-				for(java.awt.Component c:panel.getComponents())
-				{
-					if(c.getClass().toString().contains("javax.swing.JTextField"))
-					{
-						temp=(JTextField)c;
-						temp.setText(null);
-					}
-				}
-				DefaultTableModel model = (DefaultTableModel)table.getModel();
-				model.setRowCount(0);
-				textField.setText(null);
-				JSONPath.setText(null);
+			clear(panel);
+			DefaultTableModel model = (DefaultTableModel)table.getModel();
+			model.setRowCount(0);
 			}
 		});
 		btnReset.setFont(new Font("Arial", Font.BOLD, 24));
 		btnReset.setBounds(706, 352, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(btnReset);
+		panel.add(btnReset);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(610, 36, 498, 310);
-		frmPersonInformationSystem.getContentPane().add(scrollPane);
+		panel.add(scrollPane);
 
 		table = new JTable();
 		table.setDefaultEditor(Object.class, null);
@@ -721,50 +704,52 @@ public class PersonPreview {
 
 		scrollPane.setViewportView(table);
 
-		textField = new JTextField();
-		textField.setToolTipText("Enter value to filter for it");
-		textField.setFont(new Font("Arial", Font.BOLD, 24));
-		textField.setBounds(290, 465, 200, 50);
-		frmPersonInformationSystem.getContentPane().add(textField);
-		textField.setColumns(10);
+		FilterTxt = new JTextField();
+		FilterTxt.setToolTipText("Enter value to filter for it");
+		FilterTxt.setFont(new Font("Arial", Font.BOLD, 24));
+		FilterTxt.setBounds(290, 465, 200, 50);
+		panel.add(FilterTxt);
+		FilterTxt.setColumns(10);
 
-		JSONPath = new JTextField();
-		JSONPath.setToolTipText("Enter Path to JSON file");
-		JSONPath.setFont(new Font("Arial", Font.BOLD, 24));
-		JSONPath.setColumns(10);
-		JSONPath.setBounds(290, 525, 818, 50);
-		frmPersonInformationSystem.getContentPane().add(JSONPath);
+		JSONPathTxt = new JTextField();
+		JSONPathTxt.setToolTipText("Enter Path to JSON file");
+		JSONPathTxt.setFont(new Font("Arial", Font.BOLD, 24));
+		JSONPathTxt.setColumns(10);
+		JSONPathTxt.setBounds(290, 525, 818, 50);
+		panel.add(JSONPathTxt);
 		//Browse Button code---------------------------------------------------------------------------
 		//grabbing the file and writing down it's path to the text field.
-		JButton btnNewButton = new JButton("Browse");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnBrowse = new JButton("Browse");
+		btnBrowse.setFont(new Font("Arial", Font.BOLD, 24));
+		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChoser= new JFileChooser();
 				fileChoser.showOpenDialog(null);
+				try
+				{
 				File f=fileChoser.getSelectedFile();
 				String FilePath=f.getAbsolutePath();
-				JSONPath.setText(FilePath);
+				JSONPathTxt.setText(FilePath);
+				}
+				catch(Exception exp)
+				{
+					
+				}
 			}
 		});
-		btnNewButton.setBounds(1113, 525, 94, 50);
-		frmPersonInformationSystem.getContentPane().add(btnNewButton);
+		btnBrowse.setBounds(1113, 525, 200, 50);
+		panel.add(btnBrowse);
 
 		SortColumnComboBox = new JComboBox();
 		SortColumnComboBox.setModel(new DefaultComboBoxModel(new String[] {"First Name", "Last Name", "Title", "Age", "Phone", "Email"}));
 		SortColumnComboBox.setFont(new Font("Arial", Font.BOLD, 24));
 		SortColumnComboBox.setBounds(290, 408, 154, 50);
-		frmPersonInformationSystem.getContentPane().add(SortColumnComboBox);
+		panel.add(SortColumnComboBox);
 		Image img = new ImageIcon(this.getClass().getResource("/Orange_logo100.jpg")).getImage();
 		OrangeLabel = new JLabel("");
 		OrangeLabel.setIcon(new ImageIcon(img));
 		OrangeLabel.setBounds(1199, 11, 162, 129);
-		frmPersonInformationSystem.getContentPane().add(OrangeLabel);
-	}
-	protected JComboBox getSortColumnComboBox() {
-		return SortColumnComboBox;
-	}
-	protected JLabel getOrangeLabel() {
-		return OrangeLabel;
+		panel.add(OrangeLabel);
 	}
 }
 
